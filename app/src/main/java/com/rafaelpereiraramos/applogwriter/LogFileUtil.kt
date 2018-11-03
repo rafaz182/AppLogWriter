@@ -28,7 +28,7 @@ class LogFileUtil {
 
             newestDate.time = Date(Long.MIN_VALUE)
 
-            for (file in listFile) {
+            for (file in listFile.sorted()) {
                 //if (false) continue
 
                 if (pattern.matcher(file.name).matches()) {

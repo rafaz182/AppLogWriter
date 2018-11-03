@@ -13,12 +13,16 @@ import kotlin.collections.ArrayList
 /**
  * Created by Rafael P. Ramos on 31/10/2018.
  */
-class AppLogService private constructor(): Service() {
+class AppLogService : Service() {
 
-    private val writer = WriteTask(filesDir)
+    private lateinit var writer: WriteTask
     private val binder = LogServiceBinder()
 
     var clearOldFiles = true
+
+    override fun onCreate() {
+        writer = WriteTask(filesDir)
+    }
 
     override fun onBind(intent: Intent?): IBinder?  {
         synchronized(this) {
@@ -28,6 +32,7 @@ class AppLogService private constructor(): Service() {
                 writer.start()
 
                 Executors.newSingleThreadExecutor().execute(writer)
+                //Thread(writer).run()
             }
         }
 
@@ -96,6 +101,6 @@ class AppLogService private constructor(): Service() {
     }
 
     inner class LogServiceBinder : Binder() {
-        fun getService() = AppLogService.getInstance()
+        fun getService() = this@AppLogService
     }
 }

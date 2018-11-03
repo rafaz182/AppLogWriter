@@ -49,7 +49,7 @@ internal class WriteTask(
             val logMessage = deque.take()
 
             if (isFileFilled(logMessage) || logMessage is RotateLogMessage) {
-                executeRotate(logMessage as RotateLogMessage)
+                executeRotate(logMessage)
             }
 
             when (logMessage) {
@@ -135,7 +135,7 @@ internal class WriteTask(
         if (currentCacheUsed <= cacheSize - fileSize)
             return true
 
-        val listFile = storageDir.listFiles()
+        val listFile = storageDir.listFiles().sorted()
         val filesToDelete = ArrayList<File>()
         var totalCacheToDelete: Long = 0
         var totalCacheDeleted: Long = 0
@@ -144,12 +144,7 @@ internal class WriteTask(
             return true
 
         for (file in listFile) {
-            try {
-                totalCacheToDelete += Files.toByteArray(file).size.toLong()
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return false
-            }
+            totalCacheToDelete += Files.toByteArray(file).size.toLong()
 
             filesToDelete.add(file)
             if (totalCacheToDelete >= fileSize)
@@ -200,7 +195,7 @@ internal class WriteTask(
         return totalUsed
     }
 
-    private fun executeRotate(logMessage: RotateLogMessage) {
+    private fun executeRotate(logMessage: LogMessage) {
         output.write(logMessage.toString() + newLine)
         output.close()
 

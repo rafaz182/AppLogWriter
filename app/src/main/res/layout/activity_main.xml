@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+        <android.support.v7.widget.SwitchCompat android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"/>
+        <Button
+                android:id="@+id/btn_thread1"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Thread 1"/>
+
+        <Button
+                android:id="@+id/btn_tread2" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Thread 2"/>
+
+        <Button
+                android:id="@+id/btn_stop"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Stop"/>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
