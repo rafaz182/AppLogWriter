@@ -8,29 +8,41 @@ import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
 
-    var executor1 = Executors.newCachedThreadPool()
+    lateinit var thread1: Thread
+    //var executor1 = Executors.newSingleThreadExecutor()
     lateinit var thread2: Thread
+
+    private var isRunnig = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //thread1 = Thread("NameOfThread1")
-        thread2 = Thread("NameOfThread2")
+        thread1 = Thread({
+            var counter = 0
+            while (isRunnig) Timber.tag("TestTrd1").i(counter.inc().toString())
+        },"NameOfThread1")
+        thread2 = Thread({
+            var counter = 0
+            while (isRunnig) Timber.tag("TestTrd2").i(counter.inc().toString())
+        },"NameOfThread2")
 
         setEvent()
     }
 
     private fun setEvent() {
         btn_thread1.setOnClickListener {
-            executor1.execute {
-                var counter = 0
-                while (true) Timber.tag("TestTrd1").i(counter.inc().toString()) }
+            thread1.start()
+        }
+
+        btn_tread2.setOnClickListener {
+            thread2.start()
         }
 
         btn_stop.setOnClickListener {
-            executor1.shutdown()
-            executor1.shutdownNow()
+            isRunnig = false
+            thread1.join(1)
+            thread2.join(1)
         }
     }
 }
