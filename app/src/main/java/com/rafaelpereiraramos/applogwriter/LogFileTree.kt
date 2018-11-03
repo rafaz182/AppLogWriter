@@ -8,6 +8,6 @@ import timber.log.Timber
 class LogFileTree(private val service: AppLogService) : Timber.Tree() {
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        service.write(WriteLogMessage(tag, message))
+        service.write(WriteLogMessage(tag ?: "Tag", message))
     }
 }

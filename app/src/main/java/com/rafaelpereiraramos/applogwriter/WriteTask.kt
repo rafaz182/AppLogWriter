@@ -12,23 +12,25 @@ import java.io.*
 /**
  * Created by Rafael P. Ramos on 02/11/2018.
  */
-internal class WriteTask(private val storageDir: File) : Runnable {
+internal class WriteTask(
+    private val storageDir: File,
+    private val encoding: Charset = Charset.defaultCharset()!!,
+    private val fileSize: Long = 1048576,
+    private val cacheSize: Long = 10485760
+) : Runnable {
 
     private val FILE_FORMAT = ".log"
     private val BUFFER_SIZE = 512
 
     private val deque = LinkedBlockingDeque<LogMessage>()
 
-    var isRunning = true
-    var encoding = Charset.defaultCharset()!!
-    var fileSize: Long = 1048576
-    var cacheSize: Long = 10485760
+    @Volatile var isRunning = false
 
-    val logFile: File
-    var output: BufferedWriter
-    var currentFileSize = 0
-    var currentCacheUsed: Long = 0
-    val newLine = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+    private val logFile: File
+    private var output: BufferedWriter
+    private var currentFileSize = 0
+    private var currentCacheUsed: Long = 0
+    private val newLine = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         System.lineSeparator()
     } else {
         "\n"
@@ -42,7 +44,7 @@ internal class WriteTask(private val storageDir: File) : Runnable {
     }
 
     override fun run() {
-        start()
+
         while (isRunning) {
             val logMessage = deque.take()
 
@@ -55,18 +57,22 @@ internal class WriteTask(private val storageDir: File) : Runnable {
                 is StopLogMessage -> executeStop(logMessage)
             }
         }
+
+        output.close()
     }
 
     fun insert(writeLogMessage: LogMessage) {
         deque.offer(writeLogMessage)
     }
 
-    private fun start() {
+    fun start() {
         if (!storageDir.exists()) storageDir.mkdirs()
 
         currentCacheUsed = getTotalCacheUsed()
 
         while (!allocCacheSpace());
+
+        isRunning = true
     }
 
     /**
@@ -80,7 +86,7 @@ internal class WriteTask(private val storageDir: File) : Runnable {
      */
     private fun loadFile(storageDir: File, fileSize: Long): File {
         val today = SimpleDateFormat("yyy-MM-dd").format(Date())
-        var fileNameBuilder = StringBuilder()
+        var fileNameBuilder: StringBuilder //= StringBuilder()
         var newFile = LogFileUtil.getNewestLogFileModified(storageDir.listFiles())
 
         if (newFile!= null && LogFileUtil.isCreatedToday(newFile)) {

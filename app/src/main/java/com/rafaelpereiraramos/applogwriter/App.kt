@@ -33,7 +33,7 @@ class App : Application() {
                     val binder =
                         service as AppLogService.LogServiceBinder
 
-                    logService = binder.getService(applicationContext.filesDir)
+                    logService = binder.getService()
 
                     Timber.plant(LogFileTree(logService))
                 }

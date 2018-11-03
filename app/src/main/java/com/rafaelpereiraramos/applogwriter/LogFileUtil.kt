@@ -29,7 +29,7 @@ class LogFileUtil {
             newestDate.time = Date(Long.MIN_VALUE)
 
             for (file in listFile) {
-                if (file == null) continue
+                //if (false) continue
 
                 if (pattern.matcher(file.name).matches()) {
                     val dateStr = getFileDate(file)
