@@ -7,6 +7,7 @@ import android.os.IBinder
 import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.collections.ArrayList
 
 /**
@@ -75,7 +76,26 @@ class AppLogService private constructor(): Service() {
         return filesToDelete.size == 0
     }
 
+    companion object {
+        val instance = AtomicReference<AppLogService>()
+
+        fun getInstance(): AppLogService {
+            var appLog = instance.get()
+
+            if (appLog == null) {
+                appLog = AppLogService()
+
+                return if (instance.compareAndSet(null, appLog))
+                    appLog
+                else
+                    instance.get()
+            }
+
+            return appLog
+        }
+    }
+
     inner class LogServiceBinder : Binder() {
-        fun getService() = this@AppLogService
+        fun getService() = AppLogService.getInstance()
     }
 }
