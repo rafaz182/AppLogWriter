@@ -5,5 +5,10 @@
                  android:icon="@mipmap/ic_launcher"
                  android:roundIcon="@mipmap/ic_launcher_round"
                  android:supportsRtl="true"
-                 android:theme="@style/AppTheme"/>
+                 android:theme="@style/AppTheme"
+    android:name=".App">
+
+        <!--see if need run in a special process-->
+        <service android:name=".AppLogService" />
+    </application>
 </manifest>
